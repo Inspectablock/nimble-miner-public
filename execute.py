@@ -14,10 +14,18 @@ now = datetime.now()
 from datasets import load_dataset
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           Trainer, TrainingArguments)
-
+import logging
+import time                          
+ 
+  
+logging.basicConfig(filename='log.txt',
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.INFO)
 
 node_url = "https://mainnet.nimble.technology:443"
-git_repo_url = "https://github.com/nimble-technology/nimble-miner-public.git"
+git_repo_url = "https://github.com/Inspectablock/nimble-miner-public.git"
 
 
 def check_for_updates():
@@ -156,9 +164,14 @@ def perform():
                 time.sleep(30)
                 task_args = register_particle(addr)
                 print_in_color(f"Address {addr} received the task.", "\033[33m")
+                seconds = time.time()
+                logging.info(f"Executing task at {seconds}")
                 execute(task_args)
                 print_in_color(f"Address {addr} executed the task.", "\033[32m")
                 complete_task(addr)
+                finished = time.time()
+                diff = finished - seconds
+                logging.info(f"Task completed in {diff} seconds")
                 print_in_color(f"Address {addr} completed the task. Waiting for next", "\033[32m")
                 shutil.rmtree("my_model")
                 print_in_color("### Deleted the model.", "\033[31m")
